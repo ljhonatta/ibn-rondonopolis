@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import LogoMark from './LogoMark'
 
 // Revela o conteúdo suavemente quando entra na tela.
 export function Reveal({ as: Tag = 'div', delay = 0, className = '', children, ...rest }) {
@@ -57,21 +56,9 @@ export function IconRing({ icon: Icon, size = 56, className = '' }) {
   )
 }
 
-// Logo: usa /img/logo.png (arquivo oficial, se existir) e, se não, a versão vetorial.
-let temPng = null // lembra o resultado para não pedir o PNG de novo a cada render
+// Logo oficial (PNG branco, fundo transparente). Em fundo claro, inverte para preto.
 export function Logo({ className = '', light = true }) {
-  const [png, setPng] = useState(temPng !== false)
-  if (png)
-    return (
-      <img
-        src="/img/logo.png"
-        alt="IBN Rondonópolis"
-        className={className}
-        onLoad={() => (temPng = true)}
-        onError={() => ((temPng = false), setPng(false))}
-      />
-    )
-  return <LogoMark className={`${className} ${light ? 'text-white' : 'text-ink'}`} />
+  return <img src="/img/logo.png" alt="IBN Rondonópolis" className={`${className} ${light ? '' : 'invert'}`} />
 }
 
 export function useNow(interval = 1000) {

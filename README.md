@@ -13,8 +13,7 @@ React + Tailwind + Supabase, publicado no GitHub Pages.
   Opcional: com uma *Google Drive API key* (no admin → Textos & Pix → Galeria) as fotos aparecem na hora.
 - **Próximo culto**: contagem regressiva calculada pela agenda, no fuso de Cuiabá.
 - **Ao vivo**: no admin, cole o link da live e ative. Para testar sem admin: `?aovivo=teste` no fim do endereço.
-- **Logo**: hoje é a versão vetorial (`src/components/LogoMark.jsx`). Para usar o arquivo oficial,
-  salve como `public/img/logo.png` (versão branca, fundo transparente) — o site passa a usá-lo automaticamente.
+- **Logo**: arquivo oficial em `public/img/logo.png` (branco, fundo transparente). Para trocar, substitua esse arquivo.
 
 ## Ligar o painel /admin (uma vez)
 
