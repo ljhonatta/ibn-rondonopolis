@@ -3,6 +3,7 @@ import { Camera, Check, KeyRound, Loader2, Save, Trash2 } from 'lucide-react'
 import { supabase } from '../admin/client'
 import { useAuth } from '../lib/auth'
 import Termo from './Termo'
+import AtivarNotificacoes from '../components/AtivarNotificacoes'
 
 const MINISTERIOS = ['Inspira Jovens', 'Inspira Teens', 'Mulheres', 'Homens', 'Ação Solidária', 'Nenhum ainda']
 
@@ -99,6 +100,8 @@ export default function Perfil() {
           {estado === 'ok' ? 'Salvo!' : estado === 'erro' ? 'Tente de novo' : 'Salvar'}
         </button>
       </form>
+
+      <AtivarNotificacoes app="membros" />
 
       <form onSubmit={novaSenha} className="rounded-3xl bg-white p-5 shadow-sm sm:p-6">
         <h3 className="flex items-center gap-2 font-display font-extrabold uppercase"><KeyRound size={18} className="text-brand" /> Trocar senha</h3>

@@ -5,6 +5,9 @@ import {
 import { supabase } from './client'
 import { Logo } from '../components/ui'
 import { BotaoGoogle } from '../membros/Entrar'
+import { useAppShell } from '../lib/appShell'
+import { SITE_URL } from '../lib/modo'
+import AtivarNotificacoes from '../components/AtivarNotificacoes'
 import Crud from './Crud'
 import LivePanel from './LivePanel'
 import SitePanel from './SitePanel'
@@ -104,7 +107,7 @@ function Setup() {
           <li>No GitHub do site: Settings → Secrets and variables → Actions → Variables, crie <code className="rounded bg-mist px-1">VITE_SUPABASE_URL</code> e <code className="rounded bg-mist px-1">VITE_SUPABASE_ANON_KEY</code>.</li>
           <li>Rode o workflow “Deploy” de novo. Pronto!</li>
         </ol>
-        <a href="/" className="btn-red mt-8">Voltar ao site</a>
+        <a href={SITE_URL} className="btn-red mt-8">Voltar ao site</a>
       </div>
     </div>
   )
@@ -133,13 +136,14 @@ function Login() {
         <input className="field mt-3" type="password" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} required autoComplete="current-password" />
         {erro && <p className="mt-3 text-sm text-brand">{erro}</p>}
         <button className="btn-red mt-5 w-full" disabled={load}>{load && <Loader2 size={18} className="animate-spin" />} Entrar</button>
-        <a href="/" className="mt-4 block text-center text-sm text-ink/50 hover:text-ink">Voltar ao site</a>
+        <a href={SITE_URL} className="mt-4 block text-center text-sm text-ink/50 hover:text-ink">Voltar ao site</a>
       </form>
     </div>
   )
 }
 
 export default function Admin() {
+  useAppShell('admin')
   const [session, setSession] = useState(undefined)
   const [admin, setAdmin] = useState(null)
   const [tab, setTab] = useState(() => location.hash.slice(1) || '')
@@ -213,7 +217,7 @@ export default function Admin() {
     <div className="min-h-[100svh] bg-mist md:flex">
       {/* Desktop: barra lateral */}
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-ink text-white md:flex">
-        <a href="/" className="block h-12 px-6 pt-6"><Logo className="h-full w-auto" /></a>
+        <a href={SITE_URL} className="block h-12 px-6 pt-6"><Logo className="h-full w-auto" /></a>
         <div className="flex-1 overflow-y-auto px-3 py-6"><Nav /></div>
         <div className="border-t border-white/10 p-5 text-xs text-white/40">
           <p className="truncate">{session.user.email}</p>
@@ -231,7 +235,7 @@ export default function Admin() {
           <p className="text-[11px] font-bold uppercase tracking-[.2em] text-white/40">{atual.grupo}</p>
           <p className="truncate font-display text-base font-extrabold uppercase">{atual.label}</p>
         </div>
-        <a href="/" className="block h-9"><Logo className="h-full w-auto" /></a>
+        <a href={SITE_URL} className="block h-9"><Logo className="h-full w-auto" /></a>
       </header>
       {menu && (
         <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
@@ -254,7 +258,10 @@ export default function Admin() {
       )}
 
       <main className="min-w-0 flex-1 px-4 pb-28 pt-5 sm:px-8 sm:pt-8">
-        <div className="mx-auto max-w-4xl">{atual.el({ irPara: ir })}</div>
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-5"><AtivarNotificacoes app="admin" compacto /></div>
+          {atual.el({ irPara: ir })}
+        </div>
       </main>
     </div>
   )

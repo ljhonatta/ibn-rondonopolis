@@ -10,6 +10,8 @@ import { versiculoDoDia } from '../lib/versiculos'
 import { diaCurto, formatCountdown, horaBR, proximoCulto } from '../lib/utils'
 import { IconRing, Logo, useNow } from '../components/ui'
 import { Aguardando, Completar, precisaCompletar } from './Entrar'
+import { SITE_URL } from '../lib/modo'
+import AtivarNotificacoes from '../components/AtivarNotificacoes'
 import Oracoes from './Oracoes'
 import Perfil from './Perfil'
 import Contribuicoes from './Contribuicoes'
@@ -24,7 +26,7 @@ const ABAS = [
   { id: 'perfil', label: 'Perfil', icon: User },
 ]
 
-function Sino({ userId }) {
+export function Sino({ userId }) {
   const [itens, setItens] = useState([])
   const [aberto, setAberto] = useState(false)
   const load = () =>
@@ -51,12 +53,15 @@ function Sino({ userId }) {
         {novas > 0 && <span className="absolute right-1 top-1 grid h-5 min-w-5 place-items-center rounded-full bg-brand px-1 text-[11px] font-bold">{novas}</span>}
       </button>
       {aberto && (
-        <div className="absolute right-0 top-12 z-50 w-[min(92vw,360px)] overflow-hidden rounded-2xl bg-white text-ink shadow-2xl">
+        <>
+        <div className="fixed inset-0 z-40 bg-ink/40 sm:hidden" onClick={() => setAberto(false)} />
+        {/* Celular: painel centralizado na tela; computador: caixinha embaixo do sino */}
+        <div className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+68px)] z-50 overflow-hidden rounded-2xl bg-white text-ink shadow-2xl sm:absolute sm:inset-x-auto sm:right-0 sm:top-12 sm:w-[360px]">
           <div className="flex items-center justify-between border-b border-ink/10 px-4 py-3">
             <strong className="font-display text-sm uppercase">Notificações</strong>
             <button onClick={() => setAberto(false)} className="grid h-8 w-8 place-items-center rounded-full hover:bg-mist" aria-label="Fechar"><X size={16} /></button>
           </div>
-          <ul className="max-h-[60vh] overflow-y-auto">
+          <ul className="max-h-[65svh] overflow-y-auto overscroll-contain">
             {itens.length === 0 && <li className="p-5 text-sm text-ink/50">Nada por aqui ainda.</li>}
             {itens.map((n) => (
               <li key={n.id} className={`border-b border-ink/5 px-4 py-3 ${n.lida ? '' : 'bg-brand-soft/60'}`}>
@@ -69,6 +74,7 @@ function Sino({ userId }) {
             ))}
           </ul>
         </div>
+        </>
       )}
     </div>
   )
@@ -168,12 +174,13 @@ function Inicio({ irPara }) {
           </div>
         </div>
         {live.ativo && (
-          <a href="/#ao-vivo" className="btn-red mt-5 w-full">
+          <a href={`${SITE_URL}#ao-vivo`} className="btn-red mt-5 w-full">
             <span className="live-dot h-2.5 w-2.5 rounded-full bg-white" /> <PlayCircle size={18} /> Assistir ao vivo
           </a>
         )}
       </div>
 
+      <AtivarNotificacoes app="membros" compacto />
       <ResumoFinanceiro irPara={irPara} />
 
       <InstalarApp />
@@ -200,7 +207,7 @@ function Area() {
     window.scrollTo({ top: 0 })
   }
 
-  if (!supabase) return <Navigate to="/" replace />
+  if (!supabase) return null
   if (loading) return <div className="grid min-h-screen place-items-center bg-ink"><Loader2 className="animate-spin text-white" /></div>
   if (!session) return <Navigate to={`/entrar?volta=${encodeURIComponent('/minha-area' + hash)}`} replace />
   if (precisaCompletar(profile)) return <Completar profile={profile} onPronto={reloadProfile} onSair={signOut} />
@@ -210,7 +217,7 @@ function Area() {
     <div className="min-h-[100svh] bg-mist pb-28 md:pb-10">
       <header className="bg-ink pb-16 pt-4 text-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4">
-          <a href="/" className="block h-10"><Logo className="h-full w-auto" /></a>
+          <a href={SITE_URL} className="block h-10"><Logo className="h-full w-auto" /></a>
           <div className="flex items-center gap-1">
             {ehLideranca(profile) && (
               <a href="/admin" className="mr-1 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-brand-dark">

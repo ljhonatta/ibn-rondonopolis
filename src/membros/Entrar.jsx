@@ -6,6 +6,7 @@ import { SUPABASE_KEY, SUPABASE_URL } from '../lib/api'
 import { entrarComGoogle, useAuth } from '../lib/auth'
 import { Logo } from '../components/ui'
 import Termo from './Termo'
+import { SITE_URL } from '../lib/modo'
 
 const MINISTERIOS = ['Inspira Jovens', 'Inspira Teens', 'Mulheres', 'Homens', 'Ação Solidária', 'Nenhum ainda']
 
@@ -122,9 +123,9 @@ export function Casca({ children, voltar = true }) {
     <div className="min-h-[100svh] bg-ink px-4 py-10">
       <div className="mx-auto w-full max-w-md">
         <div className="mb-8 flex items-center justify-between">
-          <a href="/" className="block h-12"><Logo className="h-full w-auto" /></a>
+          <a href={SITE_URL} className="block h-12"><Logo className="h-full w-auto" /></a>
           {voltar && (
-            <a href="/" className="flex items-center gap-1.5 text-sm text-white/60 hover:text-white">
+            <a href={SITE_URL} className="flex items-center gap-1.5 text-sm text-white/60 hover:text-white">
               <ArrowLeft size={16} /> Site
             </a>
           )}
@@ -201,7 +202,7 @@ export default function Entrar() {
     document.title = 'Entrar | IBN Rondonópolis'
   }, [])
 
-  if (!supabase) return <Navigate to="/" replace />
+  if (!supabase) return null
   if (recovery) return <NovaSenha onPronto={() => (setRecovery(false), navigate('/minha-area'))} />
   if (loading) return <div className="grid min-h-screen place-items-center bg-ink"><Loader2 className="animate-spin text-white" /></div>
   if (session && precisaCompletar(profile)) return <Completar profile={profile} onPronto={reloadProfile} onSair={signOut} />

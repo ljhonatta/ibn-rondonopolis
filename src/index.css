@@ -10,6 +10,9 @@
   @media (max-width: 767px) {
     input, select, textarea { font-size: 16px !important; }
   }
+  /* Área do membro e admin: tela travada na horizontal, sem "sambar" e sem efeito elástico */
+  html.app, html.app body { overflow-x: hidden; overscroll-behavior: none; touch-action: pan-y; width: 100%; }
+  html.app #root { overflow-x: hidden; }
   body { @apply font-sans text-ink antialiased; text-rendering: optimizeLegibility; }
   section[id] { scroll-margin-top: 72px; }
   ::selection { background: #E3262E; color: #fff; }

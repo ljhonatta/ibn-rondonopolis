@@ -1,0 +1,17 @@
+{
+  "id": "/minha-area",
+  "name": "IBN Membros",
+  "short_name": "IBN Membros",
+  "description": "Área do membro da Igreja Batista Nacional de Rondonópolis",
+  "start_url": "/minha-area",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
