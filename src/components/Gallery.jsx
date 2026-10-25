@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, ExternalLink, Images, Loader2, X } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { ExternalLink, Images, Loader2 } from 'lucide-react'
 import { useSite } from '../lib/site'
 import { driveFolderUrl, driveImg, listarFotos } from '../lib/extras'
 import { Reveal, Title } from './ui'
@@ -68,8 +68,9 @@ export default function Gallery() {
   const [fotos, setFotos] = useState(null)
   const [erro, setErro] = useState(false)
   const [mostrar, setMostrar] = useState(PASSO)
-  const [aberta, setAberta] = useState(null)
   const album = albuns[ativo] || albuns[0]
+  // Clicar em qualquer foto abre o álbum inteiro no Google Drive
+  const linkAlbum = album ? driveFolderUrl(album.folder_id) : '#'
 
   useEffect(() => {
     if (!album) return
@@ -130,16 +131,18 @@ export default function Gallery() {
             <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-mist to-transparent sm:w-24" />
             <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-mist to-transparent sm:w-24" />
             <div className="marquee flex w-max gap-3 sm:gap-4" style={{ '--dur': `${faixa.length * 4}s` }}>
-              {[...faixa, ...faixa].map(({ f, i }, k) => (
-                <button
+              {[...faixa, ...faixa].map(({ f }, k) => (
+                <a
                   key={k}
-                  onClick={() => setAberta(i)}
+                  href={linkAlbum}
+                  target="_blank"
+                  rel="noopener"
                   className="h-56 w-40 shrink-0 overflow-hidden rounded-2xl bg-ink/10 sm:h-72 sm:w-52"
-                  aria-label={`Abrir foto ${i + 1}`}
+                  aria-label="Ver galeria completa no Google Drive"
                   tabIndex={k >= faixa.length ? -1 : 0}
                 >
                   <Thumb id={f.id} w={420} className="h-full w-full object-cover transition duration-500 hover:scale-105" />
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -147,14 +150,16 @@ export default function Gallery() {
           <div className="container-site mt-10">
             <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-6">
               {fotos.slice(0, mostrar).map((f, i) => (
-                <button
+                <a
                   key={f.id}
-                  onClick={() => setAberta(i)}
+                  href={linkAlbum}
+                  target="_blank"
+                  rel="noopener"
                   className="group aspect-square overflow-hidden rounded-lg bg-ink/10 sm:rounded-xl"
-                  aria-label={`Abrir foto ${i + 1}`}
+                  aria-label="Ver galeria completa no Google Drive"
                 >
                   <Thumb id={f.id} w={360} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
-                </button>
+                </a>
               ))}
             </div>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -163,17 +168,14 @@ export default function Gallery() {
                   Ver mais fotos ({fotos.length - mostrar})
                 </button>
               )}
-              <a href={driveFolderUrl(album.folder_id)} target="_blank" rel="noopener" className="btn-red">
-                <ExternalLink size={18} /> Ver álbum completo no Drive
+              <a href={linkAlbum} target="_blank" rel="noopener" className="btn-red">
+                <ExternalLink size={18} /> Ver galeria completa
               </a>
             </div>
           </div>
         </>
       )}
 
-      {aberta !== null && fotos?.length > 0 && (
-        <Lightbox fotos={fotos} index={aberta} onClose={() => setAberta(null)} onGo={setAberta} />
-      )}
     </section>
   )
 }
