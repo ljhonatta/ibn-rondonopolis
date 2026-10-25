@@ -4,6 +4,7 @@ import {
 } from 'lucide-react'
 import { supabase } from './client'
 import { Logo } from '../components/ui'
+import { BotaoGoogle } from '../membros/Entrar'
 import Crud from './Crud'
 import LivePanel from './LivePanel'
 import SitePanel from './SitePanel'
@@ -121,7 +122,8 @@ function Login() {
       <form onSubmit={entrar} className="w-full max-w-sm rounded-3xl bg-white p-8">
         <div className="mb-6 h-14"><Logo light={false} className="h-full w-auto text-[22px]" /></div>
         <h1 className="font-display text-xl font-extrabold uppercase">Área administrativa</h1>
-        <input className="field mt-5" type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
+        <div className="mt-5"><BotaoGoogle volta="/admin" texto="Entrar com Google" /></div>
+        <input className="field mt-3" type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="username" />
         <input className="field mt-3" type="password" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} required autoComplete="current-password" />
         {erro && <p className="mt-3 text-sm text-brand">{erro}</p>}
         <button className="btn-red mt-5 w-full" disabled={load}>{load && <Loader2 size={18} className="animate-spin" />} Entrar</button>
@@ -146,7 +148,8 @@ export default function Admin() {
 
   useEffect(() => {
     if (!session) return setAdmin(null)
-    supabase.rpc('meus_papeis').then(({ data }) => {
+    // Liderança cadastrada no banco recebe acesso total já no login
+    supabase.rpc('garantir_lider').then(() => supabase.rpc('meus_papeis')).then(({ data }) => {
       const p = permissoes(data?.[0])
       setAdmin(p.staff || p.admin ? p : false)
       if (p.staff || p.admin) supabase.rpc('registrar_acesso_admin').then(() => {})

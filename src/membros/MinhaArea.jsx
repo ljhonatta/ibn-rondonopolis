@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import {
-  Bell, Building2, CalendarClock, HandCoins, HandHeart, Home, Loader2, LogOut, PlayCircle, Smartphone, User, X,
+  Bell, Building2, LayoutDashboard, CalendarClock, HandCoins, HandHeart, Home, Loader2, LogOut, PlayCircle, Smartphone, User, X,
 } from 'lucide-react'
 import { supabase } from '../admin/client'
-import { primeiroNome, useAuth } from '../lib/auth'
+import { ehLideranca, primeiroNome, useAuth } from '../lib/auth'
 import { SiteProvider, useSite } from '../lib/site'
 import { versiculoDoDia } from '../lib/versiculos'
 import { diaCurto, formatCountdown, horaBR, proximoCulto } from '../lib/utils'
 import { IconRing, Logo, useNow } from '../components/ui'
-import { Aguardando } from './Entrar'
+import { Aguardando, Completar, precisaCompletar } from './Entrar'
 import Oracoes from './Oracoes'
 import Perfil from './Perfil'
 
@@ -158,7 +158,7 @@ function EmBreve({ titulo }) {
 }
 
 function Area() {
-  const { session, profile, loading, signOut } = useAuth()
+  const { session, profile, loading, signOut, reloadProfile } = useAuth()
   const { hash } = useLocation()
   const [aba, setAba] = useState(() => (ABAS.some((a) => a.id === hash.slice(1)) ? hash.slice(1) : 'inicio'))
   const [verso, ref] = versiculoDoDia()
@@ -179,6 +179,7 @@ function Area() {
   if (!supabase) return <Navigate to="/" replace />
   if (loading) return <div className="grid min-h-screen place-items-center bg-ink"><Loader2 className="animate-spin text-white" /></div>
   if (!session) return <Navigate to={`/entrar?volta=${encodeURIComponent('/minha-area')}`} replace />
+  if (precisaCompletar(profile)) return <Completar profile={profile} onPronto={reloadProfile} onSair={signOut} />
   if (!profile || profile.status !== 'ativo') return <Aguardando profile={profile} onSair={signOut} />
 
   return (
@@ -187,6 +188,11 @@ function Area() {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4">
           <a href="/" className="block h-10"><Logo className="h-full w-auto" /></a>
           <div className="flex items-center gap-1">
+            {ehLideranca(profile) && (
+              <a href="/admin" className="mr-1 inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2 text-xs font-bold uppercase tracking-wider text-white hover:bg-brand-dark">
+                <LayoutDashboard size={16} /> <span className="hidden sm:inline">Painel admin</span><span className="sm:hidden">Admin</span>
+              </a>
+            )}
             <Sino userId={session.user.id} />
             <button onClick={signOut} className="grid h-11 w-11 place-items-center rounded-full text-white/70 hover:bg-white/10 hover:text-white" aria-label="Sair"><LogOut size={20} /></button>
           </div>

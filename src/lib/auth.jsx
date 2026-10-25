@@ -12,6 +12,8 @@ export function AuthProvider({ children }) {
 
   const loadProfile = useCallback(async (s) => {
     if (!s) return setProfile(null)
+    // Liderança (lista de e-mails no banco) sempre entra com acesso total
+    await supabase.rpc('garantir_lider')
     const { data } = await supabase.from('profiles').select('*').eq('id', s.user.id).maybeSingle()
     setProfile(data || null)
   }, [])
@@ -41,5 +43,15 @@ export function AuthProvider({ children }) {
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
+
+// Entrar/criar conta com o Google (volta para a página indicada)
+export function entrarComGoogle(volta = '/minha-area') {
+  return supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: `${location.origin}/entrar?volta=${encodeURIComponent(volta)}`, queryParams: { prompt: 'select_account' } },
+  })
+}
+
+export const ehLideranca = (p) => p?.status === 'ativo' && p.roles?.some((r) => ['super_admin', 'tesouraria', 'intercessao'].includes(r))
 
 export const primeiroNome = (nome = '') => nome.trim().split(/\s+/)[0] || ''
