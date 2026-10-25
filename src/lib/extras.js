@@ -74,22 +74,27 @@ function crc16(str) {
   return crc.toString(16).toUpperCase().padStart(4, '0')
 }
 
-export function pixPayload(chave, titular, cidade = 'RONDONOPOLIS') {
+// BR Code estático (padrão EMV do Banco Central). Com valor e txid quando informados.
+export function pixPayload(chave, titular, cidade = 'RONDONOPOLIS', valor = null, txid = '***') {
   // CNPJ/CPF/telefone vão só com dígitos; e-mail e chave aleatória ficam como estão.
   const k = /^[\d./-]+$/.test(chave) ? chave.replace(/\D/g, '') : chave.trim()
   const conta = tlv('00', 'br.gov.bcb.pix') + tlv('01', k)
+  const tx = String(txid || '***').replace(/[^A-Za-z0-9*]/g, '').slice(0, 25) || '***'
   const body =
     tlv('00', '01') +
     tlv('26', conta) +
     tlv('52', '0000') +
     tlv('53', '986') +
+    (valor ? tlv('54', Number(valor).toFixed(2)) : '') +
     tlv('58', 'BR') +
     tlv('59', ascii(titular).slice(0, 25)) +
     tlv('60', ascii(cidade).slice(0, 15)) +
-    tlv('62', tlv('05', '***')) +
+    tlv('62', tlv('05', tx)) +
     '6304'
   return body + crc16(body)
 }
+
+export const RECEBEDOR_PIX = 'IGREJA BATISTA NACIONAL'
 
 // ---------- Google Drive ----------
 // -rj força JPEG (o Drive entregaria PNG/WebP gigantes); -l = qualidade.

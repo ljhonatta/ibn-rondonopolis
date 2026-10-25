@@ -12,11 +12,14 @@ import { IconRing, Logo, useNow } from '../components/ui'
 import { Aguardando, Completar, precisaCompletar } from './Entrar'
 import Oracoes from './Oracoes'
 import Perfil from './Perfil'
+import Contribuicoes from './Contribuicoes'
+import EspacoNovo, { statusParcela } from './EspacoNovo'
+import { brl, dataBR, mesAno } from '../lib/dinheiro'
 
 const ABAS = [
   { id: 'inicio', label: 'Início', icon: Home },
-  { id: 'contribuicoes', label: 'Contribuições', icon: HandCoins, breve: true },
-  { id: 'espaco-novo', label: 'Espaço Novo', icon: Building2, breve: true },
+  { id: 'contribuicoes', label: 'Contribuir', icon: HandCoins },
+  { id: 'espaco-novo', label: 'Espaço Novo', icon: Building2 },
   { id: 'oracoes', label: 'Orações', icon: HandHeart },
   { id: 'perfil', label: 'Perfil', icon: User },
 ]
@@ -99,6 +102,48 @@ function InstalarApp() {
   )
 }
 
+function ResumoFinanceiro({ irPara }) {
+  const { session } = useAuth()
+  const [dados, setDados] = useState(null)
+  useEffect(() => {
+    Promise.all([
+      supabase.from('campaign_installments').select('*').eq('member_id', session.user.id).in('status', ['Em aberto', 'Aguardando confirmação']).order('vencimento').limit(1),
+      supabase.from('contributions').select('tipo,valor,status,data_pix').eq('member_id', session.user.id).order('created_at', { ascending: false }).limit(3),
+    ]).then(([{ data: p }, { data: c }]) => setDados({ parcela: p?.[0], recentes: c || [] }))
+  }, [session.user.id])
+  if (!dados) return null
+  const s = dados.parcela && statusParcela(dados.parcela)
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      <button onClick={() => irPara('espaco-novo')} className="rounded-3xl bg-ink p-5 text-left text-white active:scale-[.99]">
+        <Building2 className="text-brand" />
+        <p className="mt-3 font-display font-extrabold uppercase">Projeto Espaço Novo</p>
+        {dados.parcela ? (
+          <>
+            <p className="mt-1 text-sm capitalize text-white/70">Próxima: {mesAno(dados.parcela.competencia)} · {brl(dados.parcela.valor)}</p>
+            <span className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${s.cor}`}>{s.label} · {dataBR(dados.parcela.vencimento)}</span>
+          </>
+        ) : (
+          <p className="mt-1 text-sm text-white/60">Faça parte: um compromisso mensal de amor com o novo espaço.</p>
+        )}
+      </button>
+      <button onClick={() => irPara('contribuicoes')} className="rounded-3xl bg-white p-5 text-left shadow-sm active:scale-[.99]">
+        <HandCoins className="text-brand" />
+        <p className="mt-3 font-display font-extrabold uppercase">Minhas contribuições</p>
+        {dados.recentes.length ? (
+          <ul className="mt-2 space-y-1 text-sm">
+            {dados.recentes.map((c, i) => (
+              <li key={i} className="flex justify-between gap-2"><span className="text-ink/70">{c.tipo} · {brl(c.valor)}</span><span className={c.status === 'Confirmado' ? 'text-emerald-700' : c.status === 'Recusado' ? 'text-brand' : 'text-sky-700'}>{c.status === 'Aguardando confirmação' ? 'Aguardando' : c.status}</span></li>
+            ))}
+          </ul>
+        ) : (
+          <p className="mt-1 text-sm text-ink/60">Registre seu dízimo, oferta ou doação com o comprovante do Pix.</p>
+        )}
+      </button>
+    </div>
+  )
+}
+
 function Inicio({ irPara }) {
   const { cultos, live } = useSite()
   useNow(1000)
@@ -129,30 +174,9 @@ function Inicio({ irPara }) {
         )}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <button onClick={() => irPara('espaco-novo')} className="rounded-3xl bg-ink p-5 text-left text-white">
-          <Building2 className="text-brand" />
-          <p className="mt-3 font-display font-extrabold uppercase">Projeto Espaço Novo</p>
-          <p className="mt-1 text-sm text-white/60">Em breve você poderá acompanhar suas parcelas por aqui.</p>
-        </button>
-        <button onClick={() => irPara('contribuicoes')} className="rounded-3xl bg-white p-5 text-left shadow-sm">
-          <HandCoins className="text-brand" />
-          <p className="mt-3 font-display font-extrabold uppercase">Minhas contribuições</p>
-          <p className="mt-1 text-sm text-ink/60">Em breve: registre seu Pix e acompanhe a confirmação.</p>
-        </button>
-      </div>
+      <ResumoFinanceiro irPara={irPara} />
 
       <InstalarApp />
-    </div>
-  )
-}
-
-function EmBreve({ titulo }) {
-  return (
-    <div className="rounded-3xl bg-white p-8 text-center shadow-sm">
-      <p className="font-display text-xs font-bold uppercase tracking-[.25em] text-brand">Em breve</p>
-      <h2 className="mt-2 font-display text-2xl font-extrabold uppercase">{titulo}</h2>
-      <p className="mx-auto mt-3 max-w-sm text-ink/60">Estamos preparando esta parte com carinho. Logo ela estará disponível aqui.</p>
     </div>
   )
 }
@@ -178,7 +202,7 @@ function Area() {
 
   if (!supabase) return <Navigate to="/" replace />
   if (loading) return <div className="grid min-h-screen place-items-center bg-ink"><Loader2 className="animate-spin text-white" /></div>
-  if (!session) return <Navigate to={`/entrar?volta=${encodeURIComponent('/minha-area')}`} replace />
+  if (!session) return <Navigate to={`/entrar?volta=${encodeURIComponent('/minha-area' + hash)}`} replace />
   if (precisaCompletar(profile)) return <Completar profile={profile} onPronto={reloadProfile} onSair={signOut} />
   if (!profile || profile.status !== 'ativo') return <Aguardando profile={profile} onSair={signOut} />
 
@@ -215,8 +239,8 @@ function Area() {
         </nav>
 
         {aba === 'inicio' && <Inicio irPara={irPara} />}
-        {aba === 'contribuicoes' && <EmBreve titulo="Minhas contribuições" />}
-        {aba === 'espaco-novo' && <EmBreve titulo="Projeto Espaço Novo" />}
+        {aba === 'contribuicoes' && <Contribuicoes />}
+        {aba === 'espaco-novo' && <EspacoNovo />}
         {aba === 'oracoes' && <Oracoes />}
         {aba === 'perfil' && <Perfil />}
       </div>

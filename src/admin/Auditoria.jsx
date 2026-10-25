@@ -36,7 +36,8 @@ export default function Auditoria() {
         <Loader2 className="animate-spin text-ink/40" />
       ) : (
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm">
-          <table className="w-full text-left text-sm">
+          <div className="overflow-x-auto overscroll-x-contain">
+          <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="bg-mist text-xs uppercase tracking-wider text-ink/50">
               <tr><th className="p-3">Quando</th><th className="p-3">Quem</th><th className="p-3">O quê</th></tr>
             </thead>
@@ -51,6 +52,7 @@ export default function Auditoria() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </Panel>

@@ -17,6 +17,7 @@ import Footer, { WhatsFab } from './components/Footer'
 // O painel só é baixado quando alguém acessa /admin.
 const Admin = lazy(() => import('./admin/Admin'))
 const Membros = lazy(() => import('./membros/Rotas'))
+const EspacoNovo = lazy(() => import('./components/EspacoNovoPublico'))
 
 function Home() {
   return (
@@ -62,6 +63,14 @@ export default function App() {
           }
         />
       ))}
+      <Route
+        path="/projeto-espaco-novo"
+        element={
+          <Suspense fallback={<div className="min-h-screen bg-ink" />}>
+            <EspacoNovo />
+          </Suspense>
+        }
+      />
       <Route path="*" element={<Home />} />
     </Routes>
   )

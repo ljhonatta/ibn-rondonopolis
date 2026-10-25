@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  CalendarDays, Church, HandHeart, History, Images, Inbox, Loader2, LogOut, Radio, Settings, UserCheck, Users,
+  Building2, CalendarDays, Church, FileCheck2, HandHeart, History, Home, Images, Inbox, LayoutDashboard, Loader2, LogOut, Menu, Radio, Settings, UserCheck, Users, X,
 } from 'lucide-react'
 import { supabase } from './client'
 import { Logo } from '../components/ui'
@@ -12,6 +12,9 @@ import Inbox_ from './Inbox'
 import Membros from './Membros'
 import PedidosMembros from './PedidosMembros'
 import Auditoria from './Auditoria'
+import Dashboard from './Dashboard'
+import Comprovantes from './Comprovantes'
+import EspacoNovoAdmin from './EspacoNovoAdmin'
 import { DIAS } from '../lib/defaults'
 import { MINISTERIO_ICONES } from '../components/Ministries'
 
@@ -19,9 +22,12 @@ const DIA_OPTS = DIAS.map((d, i) => ({ value: i, label: d }))
 const ICON_OPTS = Object.keys(MINISTERIO_ICONES).map((k) => ({ value: k, label: k }))
 
 const TABS = [
-  { id: 'live', label: 'Ao vivo', icon: Radio, el: () => <LivePanel /> },
+  { id: 'painel', grupo: 'Tesouraria', label: 'Visão geral', icon: LayoutDashboard, pode: (p) => p.tesouraria, el: ({ irPara }) => <Dashboard irPara={irPara} /> },
+  { id: 'comprovantes', grupo: 'Tesouraria', label: 'Comprovantes', icon: FileCheck2, pode: (p) => p.tesouraria, el: () => <Comprovantes /> },
+  { id: 'espaco-novo', grupo: 'Tesouraria', label: 'Espaço Novo', icon: Building2, pode: (p) => p.tesouraria, el: () => <EspacoNovoAdmin /> },
+  { id: 'live', grupo: 'Site', label: 'Ao vivo', icon: Radio, el: () => <LivePanel /> },
   {
-    id: 'cultos', label: 'Cultos', icon: Church,
+    id: 'cultos', grupo: 'Site', label: 'Cultos', icon: Church,
     el: () => (
       <Crud table="cultos" titulo="Cultos" campos={[
         { k: 'nome', label: 'Nome do culto', req: true },
@@ -31,7 +37,7 @@ const TABS = [
     ),
   },
   {
-    id: 'eventos', label: 'Eventos', icon: CalendarDays,
+    id: 'eventos', grupo: 'Site', label: 'Eventos', icon: CalendarDays,
     el: () => (
       <Crud table="eventos" titulo="Eventos" campos={[
         { k: 'titulo', label: 'Título', req: true },
@@ -43,7 +49,7 @@ const TABS = [
     ),
   },
   {
-    id: 'ministerios', label: 'Ministérios', icon: Users,
+    id: 'ministerios', grupo: 'Site', label: 'Ministérios', icon: Users,
     el: () => (
       <Crud table="ministerios" titulo="Ministérios" campos={[
         { k: 'nome', label: 'Nome', req: true },
@@ -54,7 +60,7 @@ const TABS = [
     ),
   },
   {
-    id: 'albuns', label: 'Álbuns (Drive)', icon: Images,
+    id: 'albuns', grupo: 'Site', label: 'Álbuns (Drive)', icon: Images,
     el: () => (
       <Crud table="albuns" titulo="Álbuns da galeria" ajuda="Cole o link da pasta do Google Drive (compartilhada como “qualquer pessoa com o link”). Cada pasta vira um álbum." campos={[
         { k: 'nome', label: 'Nome do álbum', req: true },
@@ -62,12 +68,12 @@ const TABS = [
       ]} resumo={(r) => r.folder_id} />
     ),
   },
-  { id: 'site', label: 'Textos & Pix', icon: Settings, el: () => <SitePanel /> },
-  { id: 'membros', label: 'Membros', icon: UserCheck, pode: (p) => p.super, el: () => <Membros /> },
-  { id: 'oracoes', label: 'Orações (membros)', icon: HandHeart, pode: (p) => p.intercessao, el: () => <PedidosMembros /> },
-  { id: 'mensagens', label: 'Mensagens', icon: Inbox, pode: (p) => p.intercessao, el: () => <Inbox_ table="mensagens" /> },
-  { id: 'avisos', label: 'Avisos', icon: HandHeart, pode: (p) => p.staff, el: () => <Inbox_ table="avisos" /> },
-  { id: 'auditoria', label: 'Auditoria', icon: History, pode: (p) => p.super || p.tesouraria, el: () => <Auditoria /> },
+  { id: 'site', grupo: 'Site', label: 'Textos & Pix', icon: Settings, el: () => <SitePanel /> },
+  { id: 'membros', grupo: 'Pessoas', label: 'Membros', icon: UserCheck, pode: (p) => p.super, el: () => <Membros /> },
+  { id: 'oracoes', grupo: 'Pessoas', label: 'Orações (membros)', icon: HandHeart, pode: (p) => p.intercessao, el: () => <PedidosMembros /> },
+  { id: 'mensagens', grupo: 'Pessoas', label: 'Mensagens', icon: Inbox, pode: (p) => p.intercessao, el: () => <Inbox_ table="mensagens" /> },
+  { id: 'avisos', grupo: 'Pessoas', label: 'Avisos', icon: HandHeart, pode: (p) => p.staff, el: () => <Inbox_ table="avisos" /> },
+  { id: 'auditoria', grupo: 'Segurança', label: 'Auditoria', icon: History, pode: (p) => p.super || p.tesouraria, el: () => <Auditoria /> },
 ]
 
 // Quem vê o quê: conteúdo do site = Super Admin; orações = Intercessão; membros = Super Admin
@@ -136,7 +142,8 @@ function Login() {
 export default function Admin() {
   const [session, setSession] = useState(undefined)
   const [admin, setAdmin] = useState(null)
-  const [tab, setTab] = useState(() => location.hash.slice(1) || 'live')
+  const [tab, setTab] = useState(() => location.hash.slice(1) || '')
+  const [menu, setMenu] = useState(false)
 
   useEffect(() => {
     document.title = 'Admin | IBN Rondonópolis'
@@ -157,7 +164,7 @@ export default function Admin() {
   }, [session])
 
   useEffect(() => {
-    history.replaceState(null, '', `#${tab}`)
+    if (tab) history.replaceState(null, '', `#${tab}`)
   }, [tab])
 
   const abas = useMemo(() => (admin ? TABS.filter((t) => (t.pode ? t.pode(admin) : admin.admin)) : []), [admin])
@@ -177,33 +184,78 @@ export default function Admin() {
       </div>
     )
 
-  return (
-    <div className="min-h-screen bg-mist md:flex">
-      <aside className="sticky top-0 z-20 bg-ink text-white md:h-screen md:w-64 md:shrink-0">
-        <div className="flex items-center justify-between p-4 md:block md:p-6">
-          <a href="/" className="block h-10 md:h-12"><Logo className="h-full w-auto text-[17px]" /></a>
-          <button onClick={() => supabase.auth.signOut()} className="flex items-center gap-2 text-sm text-white/60 hover:text-white md:hidden"><LogOut size={16} /> Sair</button>
-        </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:px-4">
-          {abas.map((t) => (
+  const ir = (id) => {
+    setTab(id)
+    setMenu(false)
+    window.scrollTo({ top: 0 })
+  }
+  const grupos = [...new Set(abas.map((t) => t.grupo))]
+  const Nav = () => (
+    <nav className="space-y-5">
+      {grupos.map((g) => (
+        <div key={g}>
+          <p className="mb-1.5 px-4 text-[11px] font-bold uppercase tracking-[.2em] text-white/35">{g}</p>
+          {abas.filter((t) => t.grupo === g).map((t) => (
             <button
               key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`flex shrink-0 items-center gap-3 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition ${t.id === atual.id ? 'bg-brand text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+              onClick={() => ir(t.id)}
+              className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-[15px] font-semibold transition md:py-2.5 md:text-sm ${t.id === atual.id ? 'bg-brand text-white' : 'text-white/75 active:bg-white/10 md:hover:bg-white/10 md:hover:text-white'}`}
             >
-              <t.icon size={17} /> {t.label}
+              <t.icon size={18} /> {t.label}
             </button>
           ))}
-        </nav>
-        <div className="absolute bottom-6 left-6 hidden text-xs text-white/40 md:block">
-          {session.user.email}
-          <button onClick={() => supabase.auth.signOut()} className="mt-2 flex items-center gap-2 text-sm text-white/60 hover:text-white"><LogOut size={16} /> Sair</button>
+        </div>
+      ))}
+    </nav>
+  )
+
+  return (
+    <div className="min-h-[100svh] bg-mist md:flex">
+      {/* Desktop: barra lateral */}
+      <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col bg-ink text-white md:flex">
+        <a href="/" className="block h-12 px-6 pt-6"><Logo className="h-full w-auto" /></a>
+        <div className="flex-1 overflow-y-auto px-3 py-6"><Nav /></div>
+        <div className="border-t border-white/10 p-5 text-xs text-white/40">
+          <p className="truncate">{session.user.email}</p>
+          <div className="mt-3 flex gap-4">
+            <a href="/minha-area" className="flex items-center gap-1.5 text-sm text-white/60 hover:text-white"><Home size={15} /> Minha área</a>
+            <button onClick={() => supabase.auth.signOut()} className="flex items-center gap-1.5 text-sm text-white/60 hover:text-white"><LogOut size={15} /> Sair</button>
+          </div>
         </div>
       </aside>
-      <main className="flex-1 p-4 sm:p-8">
-        <div className="mx-auto max-w-4xl">{atual.el()}</div>
+
+      {/* Celular: cabeçalho fixo + menu em gaveta */}
+      <header className="sticky top-0 z-30 flex items-center gap-3 bg-ink px-4 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-white md:hidden">
+        <button onClick={() => setMenu(true)} className="grid h-11 w-11 place-items-center rounded-full bg-white/10" aria-label="Abrir menu"><Menu size={22} /></button>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-bold uppercase tracking-[.2em] text-white/40">{atual.grupo}</p>
+          <p className="truncate font-display text-base font-extrabold uppercase">{atual.label}</p>
+        </div>
+        <a href="/" className="block h-9"><Logo className="h-full w-auto" /></a>
+      </header>
+      {menu && (
+        <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true">
+          <div className="absolute inset-0 bg-ink/60 backdrop-blur-sm" onClick={() => setMenu(false)} />
+          <div className="absolute inset-y-0 left-0 flex w-[84%] max-w-xs animate-[slideIn_.25s_ease-out] flex-col bg-ink text-white">
+            <div className="flex items-center justify-between px-5 pb-2 pt-[max(1rem,env(safe-area-inset-top))]">
+              <div className="h-10"><Logo className="h-full w-auto" /></div>
+              <button onClick={() => setMenu(false)} className="grid h-11 w-11 place-items-center rounded-full bg-white/10" aria-label="Fechar menu"><X size={22} /></button>
+            </div>
+            <div className="flex-1 overflow-y-auto overscroll-contain px-3 py-4"><Nav /></div>
+            <div className="border-t border-white/10 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-sm">
+              <p className="truncate text-xs text-white/40">{session.user.email}</p>
+              <div className="mt-3 flex gap-5">
+                <a href="/minha-area" className="flex items-center gap-1.5 text-white/70"><Home size={16} /> Minha área</a>
+                <button onClick={() => supabase.auth.signOut()} className="flex items-center gap-1.5 text-white/70"><LogOut size={16} /> Sair</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <main className="min-w-0 flex-1 px-4 pb-28 pt-5 sm:px-8 sm:pt-8">
+        <div className="mx-auto max-w-4xl">{atual.el({ irPara: ir })}</div>
       </main>
     </div>
   )
 }
-

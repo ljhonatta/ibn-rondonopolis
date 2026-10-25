@@ -4,7 +4,12 @@
 
 @layer base {
   html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
-  html, body { overflow-x: clip; }
+  html, body { overflow-x: clip; overscroll-behavior-x: none; }
+  /* Sistema interno com cara de app: sem balanço lateral, sem zoom ao tocar em campos no iPhone */
+  body { touch-action: manipulation; -webkit-text-size-adjust: 100%; }
+  @media (max-width: 767px) {
+    input, select, textarea { font-size: 16px !important; }
+  }
   body { @apply font-sans text-ink antialiased; text-rendering: optimizeLegibility; }
   section[id] { scroll-margin-top: 72px; }
   ::selection { background: #E3262E; color: #fff; }
@@ -59,3 +64,5 @@
 
 @keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+@keyframes slideIn { from { transform: translateX(-100%); } to { transform: none; } }
