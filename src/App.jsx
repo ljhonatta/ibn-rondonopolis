@@ -1,0 +1,56 @@
+import { lazy, Suspense } from 'react'
+import { Route, Routes } from 'react-router-dom'
+import { SiteProvider } from './lib/site'
+import Header from './components/Header'
+import Hero from './components/Hero'
+import NextService from './components/NextService'
+import About from './components/About'
+import Schedule from './components/Schedule'
+import Events from './components/Events'
+import Ministries from './components/Ministries'
+import Gallery from './components/Gallery'
+import Give from './components/Give'
+import Contact from './components/Contact'
+import Location from './components/Location'
+import Footer, { WhatsFab } from './components/Footer'
+
+// O painel só é baixado quando alguém acessa /admin.
+const Admin = lazy(() => import('./admin/Admin'))
+
+function Home() {
+  return (
+    <SiteProvider>
+      <Header />
+      <main>
+        <Hero />
+        <NextService />
+        <About />
+        <Schedule />
+        <Events />
+        <Ministries />
+        <Gallery />
+        <Give />
+        <Contact />
+        <Location />
+      </main>
+      <Footer />
+      <WhatsFab />
+    </SiteProvider>
+  )
+}
+
+export default function App() {
+  return (
+    <Routes>
+      <Route
+        path="/admin/*"
+        element={
+          <Suspense fallback={<div className="grid min-h-screen place-items-center bg-ink text-white/50">Carregando…</div>}>
+            <Admin />
+          </Suspense>
+        }
+      />
+      <Route path="*" element={<Home />} />
+    </Routes>
+  )
+}

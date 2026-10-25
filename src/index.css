@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+  html, body { overflow-x: clip; }
+  body { @apply font-sans text-ink antialiased; text-rendering: optimizeLegibility; }
+  section[id] { scroll-margin-top: 72px; }
+  ::selection { background: #E3262E; color: #fff; }
+}
+
+@layer components {
+  .container-site { @apply mx-auto w-full max-w-site px-4 sm:px-6 lg:px-8; }
+  .section { @apply py-20 sm:py-24 lg:py-28; }
+
+  .btn {
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 py-3 font-display text-sm font-bold uppercase tracking-wider transition duration-300 ease-out active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand;
+  }
+  .btn-red { @apply btn bg-brand text-white shadow-[0_10px_30px_-10px_rgba(227,38,46,.7)] hover:-translate-y-0.5 hover:bg-brand-dark hover:shadow-[0_16px_36px_-12px_rgba(227,38,46,.8)]; }
+  .btn-ghost-light { @apply btn border border-white/40 text-white hover:-translate-y-0.5 hover:border-white hover:bg-white hover:text-ink; }
+  .btn-ghost-dark { @apply btn border border-ink/20 text-ink hover:-translate-y-0.5 hover:border-ink hover:bg-ink hover:text-white; }
+
+  .script { @apply font-script font-normal normal-case tracking-normal text-brand; }
+
+  .icon-ring { @apply inline-flex shrink-0 items-center justify-center rounded-full border-2 border-brand text-brand; }
+
+  .card-light { @apply rounded-3xl bg-white p-6 shadow-[0_1px_2px_rgba(0,0,0,.04),0_12px_40px_-20px_rgba(0,0,0,.18)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_1px_2px_rgba(0,0,0,.04),0_24px_50px_-20px_rgba(0,0,0,.25)]; }
+  .card-dark { @apply rounded-3xl border border-white/10 bg-white/[.04] p-6 backdrop-blur-sm transition duration-300 hover:-translate-y-1 hover:border-brand/60 hover:bg-white/[.07]; }
+
+  .field { @apply w-full rounded-xl border border-ink/15 bg-white px-4 py-3 text-base text-ink outline-none transition placeholder:text-ink/40 focus:border-brand focus:ring-4 focus:ring-brand/15; }
+}
+
+/* Revelar ao rolar */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* Faixa vermelha diagonal (Agenda de CULTOS) */
+.slash { position: relative; display: inline-block; padding: .15em .6em; isolation: isolate; }
+.slash::before { content: ''; position: absolute; inset: 0; background: #E3262E; transform: skewX(-12deg) rotate(-2deg); z-index: -1; border-radius: 4px; }
+
+/* AO VIVO pulsante */
+@keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(227,38,46,.7); } 80%,100% { box-shadow: 0 0 0 14px rgba(227,38,46,0); } }
+.live-dot { animation: pulse-ring 1.6s ease-out infinite; }
+
+/* Carrossel contínuo */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.marquee { animation: marquee var(--dur, 80s) linear infinite; will-change: transform; }
+.marquee-wrap:hover .marquee { animation-play-state: paused; }
+
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.floaty { animation: floaty 4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .marquee, .floaty, .live-dot { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
