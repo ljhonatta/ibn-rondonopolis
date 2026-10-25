@@ -70,6 +70,13 @@ export default function Inbox({ table }) {
                 <>
                   <p className="mt-3 text-xs font-bold uppercase tracking-wider text-brand">{r.tipo}</p>
                   <p className="mt-1 whitespace-pre-wrap text-ink/80">{r.mensagem}</p>
+                  <textarea
+                    rows={2}
+                    className="field mt-3 text-sm"
+                    placeholder="Anotação interna (só a equipe vê)"
+                    defaultValue={r.anotacao_interna || ''}
+                    onBlur={(e) => e.target.value !== (r.anotacao_interna || '') && supabase.from(table).update({ anotacao_interna: e.target.value }).eq('id', r.id).then(() => {})}
+                  />
                 </>
               ) : (
                 <p className="mt-2 text-sm">Evento: <strong>{r.evento_titulo}</strong></p>

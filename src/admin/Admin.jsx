@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  CalendarDays, Church, HandHeart, Images, Inbox, Loader2, LogOut, Radio, Settings, Users,
+  CalendarDays, Church, HandHeart, History, Images, Inbox, Loader2, LogOut, Radio, Settings, UserCheck, Users,
 } from 'lucide-react'
 import { supabase } from './client'
 import { Logo } from '../components/ui'
@@ -8,6 +8,9 @@ import Crud from './Crud'
 import LivePanel from './LivePanel'
 import SitePanel from './SitePanel'
 import Inbox_ from './Inbox'
+import Membros from './Membros'
+import PedidosMembros from './PedidosMembros'
+import Auditoria from './Auditoria'
 import { DIAS } from '../lib/defaults'
 import { MINISTERIO_ICONES } from '../components/Ministries'
 
@@ -59,9 +62,25 @@ const TABS = [
     ),
   },
   { id: 'site', label: 'Textos & Pix', icon: Settings, el: () => <SitePanel /> },
-  { id: 'mensagens', label: 'Mensagens', icon: Inbox, el: () => <Inbox_ table="mensagens" /> },
-  { id: 'avisos', label: 'Avisos', icon: HandHeart, el: () => <Inbox_ table="avisos" /> },
+  { id: 'membros', label: 'Membros', icon: UserCheck, pode: (p) => p.super, el: () => <Membros /> },
+  { id: 'oracoes', label: 'Orações (membros)', icon: HandHeart, pode: (p) => p.intercessao, el: () => <PedidosMembros /> },
+  { id: 'mensagens', label: 'Mensagens', icon: Inbox, pode: (p) => p.intercessao, el: () => <Inbox_ table="mensagens" /> },
+  { id: 'avisos', label: 'Avisos', icon: HandHeart, pode: (p) => p.staff, el: () => <Inbox_ table="avisos" /> },
+  { id: 'auditoria', label: 'Auditoria', icon: History, pode: (p) => p.super || p.tesouraria, el: () => <Auditoria /> },
 ]
+
+// Quem vê o quê: conteúdo do site = Super Admin; orações = Intercessão; membros = Super Admin
+function permissoes(row) {
+  const roles = row?.status === 'ativo' ? row.roles || [] : []
+  const superAdmin = roles.includes('super_admin') || Boolean(row?.admin)
+  return {
+    admin: Boolean(row?.admin),
+    super: superAdmin,
+    intercessao: superAdmin || roles.includes('intercessao'),
+    tesouraria: superAdmin || roles.includes('tesouraria'),
+    staff: superAdmin || roles.some((r) => ['tesouraria', 'intercessao'].includes(r)),
+  }
+}
 
 function Setup() {
   return (
@@ -127,14 +146,19 @@ export default function Admin() {
 
   useEffect(() => {
     if (!session) return setAdmin(null)
-    supabase.rpc('is_admin').then(({ data }) => setAdmin(Boolean(data)))
+    supabase.rpc('meus_papeis').then(({ data }) => {
+      const p = permissoes(data?.[0])
+      setAdmin(p.staff || p.admin ? p : false)
+      if (p.staff || p.admin) supabase.rpc('registrar_acesso_admin').then(() => {})
+    })
   }, [session])
 
   useEffect(() => {
     history.replaceState(null, '', `#${tab}`)
   }, [tab])
 
-  const atual = useMemo(() => TABS.find((t) => t.id === tab) || TABS[0], [tab])
+  const abas = useMemo(() => (admin ? TABS.filter((t) => (t.pode ? t.pode(admin) : admin.admin)) : []), [admin])
+  const atual = abas.find((t) => t.id === tab) || abas[0]
 
   if (!supabase) return <Setup />
   if (session === undefined) return <div className="grid min-h-screen place-items-center bg-ink"><Loader2 className="animate-spin text-white" /></div>
@@ -158,7 +182,7 @@ export default function Admin() {
           <button onClick={() => supabase.auth.signOut()} className="flex items-center gap-2 text-sm text-white/60 hover:text-white md:hidden"><LogOut size={16} /> Sair</button>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-col md:px-4">
-          {TABS.map((t) => (
+          {abas.map((t) => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}

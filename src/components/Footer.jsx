@@ -69,6 +69,7 @@ export default function Footer() {
           <a href="https://vprmt.com.br" target="_blank" rel="noopener" className="hover:text-white/70">
             Site criado pela <strong className="font-semibold text-white/60">Agência VPR</strong>
           </a>
+          <a href="/entrar" className="hover:text-white/70">Área do membro</a>
           <a href="/admin" className="hover:text-white/70">Área administrativa</a>
         </div>
       </div>

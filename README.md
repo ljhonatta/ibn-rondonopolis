@@ -39,3 +39,13 @@ No registro do domínio, aponte:
 npm install
 npm run dev
 ```
+
+## Área do membro (Fase 2A)
+
+- `/entrar`: login, criar conta (fica **pendente** até a liderança aprovar) e recuperação de senha.
+- `/minha-area`: início (próximo culto + ao vivo), pedidos de oração, perfil (foto, dados, avisos, exclusão LGPD), sino de notificações.
+- `/admin` mostra abas conforme o papel: **Super Admin** (tudo, aprova membros e define papéis), **Intercessão/Pastoral** (orações e mensagens, inclusive confidenciais), **Tesouraria** (auditoria; financeiro chega na Fase 2B).
+- Banco: `supabase/migrations/` (aplicar com `supabase db push`). Projeto Supabase: `zgzgmabttwvaezoffwds`.
+- Primeiro Super Admin: depois de criar a conta pelo site, rode no SQL Editor:
+  `update profiles set status = 'ativo', roles = '{membro,super_admin}' where email = 'EMAIL';`
+- Contribuições e Projeto Espaço Novo aparecem como "Em breve" até as Fases 2B e 2C.
