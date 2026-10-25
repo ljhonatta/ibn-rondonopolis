@@ -65,7 +65,12 @@ export default function Footer() {
       </div>
       <div className="container-site mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row sm:justify-between">
         <p>© Igreja Batista Nacional — Rondonópolis/MT · CNPJ {site.cnpj}</p>
-        <a href="/admin" className="hover:text-white/70">Área administrativa</a>
+        <div className="flex flex-wrap gap-x-4 gap-y-2">
+          <a href="https://vprmt.com.br" target="_blank" rel="noopener" className="hover:text-white/70">
+            Site criado pela <strong className="font-semibold text-white/60">Agência VPR</strong>
+          </a>
+          <a href="/admin" className="hover:text-white/70">Área administrativa</a>
+        </div>
       </div>
     </footer>
   )
