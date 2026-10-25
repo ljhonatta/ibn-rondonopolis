@@ -48,7 +48,7 @@ export default function Contact() {
                 <Check size={36} />
               </span>
               <p className="mx-auto mt-6 max-w-lg text-lg font-medium leading-relaxed">
-                Recebemos sua mensagem. Nossa equipe vai entrar em contato — e, se for um pedido de oração, já estamos intercedendo por você.
+                Recebemos sua mensagem. Nossa equipe vai entrar em contato e, se for um pedido de oração, já estamos intercedendo por você.
               </p>
               <button onClick={() => setEstado('form')} className="btn-ghost-dark mt-8">
                 Enviar outra mensagem

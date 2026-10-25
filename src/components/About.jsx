@@ -7,7 +7,7 @@ const VALOR_ICON = [Feather, HandHeart, Scale, Users, BookOpen]
 export default function About() {
   const { site } = useSite()
   return (
-    <section id="quem-somos" className="section bg-mist pt-28">
+    <section id="quem-somos" className="section bg-mist">
       <div className="container-site">
         <Title kicker="Quem somos" strong="Nossa missão," script="visão e valores" />
 

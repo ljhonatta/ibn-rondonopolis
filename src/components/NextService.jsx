@@ -22,7 +22,7 @@ function LivePlayer({ id }) {
         <iframe
           className="absolute inset-0 h-full w-full"
           src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`}
-          title="Transmissão ao vivo — IBN Rondonópolis"
+          title="Transmissão ao vivo da IBN Rondonópolis"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
@@ -54,8 +54,8 @@ export default function NextService() {
   const t = prox ? formatCountdown(prox.ms) : null
 
   return (
-    <section id="ao-vivo" className="relative z-10 -mt-20 px-4 sm:px-6">
-      <div className="mx-auto max-w-5xl rounded-[2rem] bg-white p-5 shadow-[0_30px_80px_-30px_rgba(0,0,0,.45)] sm:p-8">
+    <section id="ao-vivo" className="relative z-10 -mt-24 px-4 pb-14 sm:-mt-28 sm:px-6 sm:pb-20">
+      <div className="mx-auto max-w-5xl rounded-[2rem] bg-white p-5 shadow-[0_24px_60px_-28px_rgba(0,0,0,.8)] ring-1 ring-white/10 sm:p-8">
         {aoVivo ? (
           <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-center">
             <LivePlayer id={vid} />

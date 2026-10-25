@@ -43,8 +43,11 @@ export default function Schedule() {
             <HeartHandshake size={24} strokeWidth={1.5} />
           </span>
           <p className="text-[17px] font-medium leading-relaxed">
-            <strong className="font-display font-extrabold uppercase">{site.acao_solidaria.split('—')[0]}</strong>
-            {site.acao_solidaria.includes('—') && <>— {site.acao_solidaria.split('—').slice(1).join('—')}</>}
+            {(() => {
+              // "Título: texto" vira título em destaque + texto
+              const [titulo, ...resto] = site.acao_solidaria.split(/\s*[:—]\s*/)
+              return resto.length ? <><strong className="font-display font-extrabold uppercase">{titulo}:</strong> {resto.join(': ')}</> : titulo
+            })()}
           </p>
         </Reveal>
 

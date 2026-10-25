@@ -4,19 +4,19 @@
 export const DEFAULT_SITE = {
   hero_titulo: 'Aqui você tem uma família.',
   hero_subtitulo:
-    'Somos a Igreja Batista Nacional em Rondonópolis. Venha como você está — tem um lugar pra você.',
+    'Somos a Igreja Batista Nacional em Rondonópolis. Venha como você está, tem um lugar pra você.',
   missao: 'Amar as pessoas e conduzi-las a Cristo, servindo com testemunho e dedicação.',
   visao:
     'Ser uma comunidade inspiradora no relacionamento com Deus e interpessoal, de vida cristã responsável e bíblica, formando cidadãos em todas as esferas sociais.',
   valores: ['Simplicidade', 'Solidariedade', 'Responsabilidade', 'Relacionamento', 'Conhecimento'],
   selo_anos: '5 anos caminhando juntos',
   acao_solidaria:
-    'Ação Solidária — todo 1º domingo do mês, traga 1kg de alimento. Sua generosidade alimenta famílias.',
+    'Ação Solidária: todo 1º domingo do mês, traga 1kg de alimento. Sua generosidade alimenta famílias.',
   whatsapp: '5566999401544',
   youtube: 'https://www.youtube.com/@ibnrondonopolis',
   instagram: 'https://www.instagram.com/ibnrondonopolis',
   facebook: 'https://www.facebook.com/search/top?q=IBN%20Rondonopolis',
-  endereco: 'Rua José Barriga, nº 3025 — Jardim Gramado, Rondonópolis/MT',
+  endereco: 'Rua José Barriga, nº 3025, Jardim Gramado, Rondonópolis/MT',
   maps_query: 'Rua José Barriga, 3025 - Jardim Gramado, Rondonópolis - MT',
   pix_chave: '51.854.887/0001-16',
   pix_titular: 'Igreja Batista Nacional de Rondonópolis',

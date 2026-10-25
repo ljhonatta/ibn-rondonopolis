@@ -21,7 +21,7 @@ export default function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-ink/70 via-ink/40 to-ink" />
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_20%_80%,rgba(227,38,46,.25),transparent_55%)]" />
 
-      <div className="container-site pb-28 pt-28 sm:pt-32">
+      <div className="container-site pb-32 pt-28 sm:pb-40 sm:pt-32">
         <div className="max-w-3xl">
           <div className="mb-8 h-28 animate-[fadeUp_.9s_ease-out_both] sm:h-36">
             <Logo className="h-full w-auto text-[26px] sm:text-[32px]" />

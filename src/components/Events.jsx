@@ -33,7 +33,7 @@ function AvisoModal({ evento, onClose }) {
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-label={`Quero ser avisado — ${evento.titulo}`}
+        aria-label={`Quero ser avisado: ${evento.titulo}`}
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -146,7 +146,7 @@ export default function Events() {
               <h3 className="mt-3 font-display text-2xl font-extrabold uppercase leading-tight">
                 Aniversário de <span className="script whitespace-nowrap text-[1.4em]">5 anos</span> da IBN Rondonópolis
               </h3>
-              <p className="mt-2 text-white/70">Conferência Despertar — cinco anos de fidelidade de Deus.</p>
+              <p className="mt-2 text-white/70">Conferência Despertar: cinco anos de fidelidade de Deus.</p>
               <a href="#galeria" className="btn-ghost-light mt-6">Ver fotos</a>
             </div>
           </Reveal>

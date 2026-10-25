@@ -28,7 +28,7 @@ const GRUPOS = [
     ['facebook', 'Facebook'],
   ]],
   ['Galeria', [
-    ['drive_api_key', 'Google Drive API key (opcional — sem ela as fotos novas aparecem em até 1h)'],
+    ['drive_api_key', 'Google Drive API key (opcional; sem ela as fotos novas aparecem em até 1h)'],
   ]],
 ]
 
