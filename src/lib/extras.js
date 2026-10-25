@@ -15,7 +15,7 @@ export function gerarICS(cultos, endereco) {
     const fim = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(h + 2)}${pad(m)}00`
     return [
       'BEGIN:VEVENT',
-      `UID:${uid}@ibnrondonopolis.com.br`,
+      `UID:${uid}@ibnrondonopolis.com`,
       `DTSTAMP:${stamp}`,
       `DTSTART;TZID=America/Cuiaba:${ini}`,
       `DTEND;TZID=America/Cuiaba:${fim}`,

@@ -1,6 +1,6 @@
 # IBN Rondonópolis — site oficial
 
-Site da Igreja Batista Nacional de Rondonópolis · **ibnrondonopolis.com.br**
+Site da Igreja Batista Nacional de Rondonópolis · **ibnrondonopolis.com**
 
 React + Tailwind + Supabase, publicado no GitHub Pages.
 
@@ -23,7 +23,7 @@ React + Tailwind + Supabase, publicado no GitHub Pages.
 4. Supabase → Project Settings → API: copie **Project URL** e **anon public key**
 5. GitHub → Settings → Secrets and variables → Actions → **Variables**: crie
    `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`
-6. Actions → Deploy → *Run workflow*. Pronto: entre em `ibnrondonopolis.com.br/admin`.
+6. Actions → Deploy → *Run workflow*. Pronto: entre em `ibnrondonopolis.com/admin`.
 
 Segurança: mensagens e pedidos de oração só podem ser **inseridos** pelo público; leitura apenas por admins (RLS).
 
